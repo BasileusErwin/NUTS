@@ -6,5 +6,6 @@ ENTRY(bootMain)
 SECTIONS {
   . = 0x100000;
   .boot : { *(.boot) }
-  .text : { *(.text) }
+  .text : ALIGN(0x1000) { *(.text) }
+  .bss : ALIGN(0x1000) { *(.bss) }
 }

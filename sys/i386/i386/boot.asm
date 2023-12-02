@@ -16,27 +16,23 @@ multibootHeader:
   dd multibootChecksum
 
 section .text
+
+extern main
 ; boot entry point
 ; this is where the bootloader will jump to
 global bootMain
 bootMain:
-.bootCleanScreen:
-  mov dx, 0x0720 ; white on black space
-  mov cx, 2000 ; 80 * 25
-  mov ebx, 0xb8000 ; video memory
-
-.bootCleanChar:
-  mov [ebx], dx ; write to video memory ; [ebx] is a pointer to the memory location
-  dec cx
-  add ebx, 2
-  cmp cx, 0
-  jne .bootCleanChar
-
-.bootPrintOk:
-  mov edx, 0x3e4b3e4f ; "OK"
-  mov ebx, 0xb8000 ; video memory
-  mov [ebx], edx ; write to video memory
+  mov esp, stackTop ; set the stack pointer
+  mov ebp, esp ; set the base pointer
+  call main
 
 bootDie:
   hlt ; halt the CPU
   jmp bootDie ; jump back to the beginning
+
+; stack section for the kernel
+section .bss
+
+stackBottom:
+  resb 8192; 8KB of stack
+stackTop:
